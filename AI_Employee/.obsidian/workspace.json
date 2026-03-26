@@ -214,6 +214,10 @@
   },
   "active": "1a7ce64dda08afaf",
   "lastOpenFiles": [
+    "Plans/PLAN_test.md",
+    "Plans/PLAN_linkedin_post.md",
+    "Plans",
+    "process_tasks.py",
     "Done/linkedin_post.md",
     "Needs_Action/linkedin_post.txt",
     "Inbox/linkedin_post.txt",
@@ -230,8 +234,6 @@
     "Inbox/test.txt",
     "Company_Handbook.md",
     "file_watcher.py.md",
-    "file_watcher.py",
-    "Done",
     "Untitled 2.md",
     "Welcome.md"
   ]
