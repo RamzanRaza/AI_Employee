@@ -1,16 +1,8 @@
 # AI Employee — Architecture Overview
 
-An event-driven AI workflow system built on an Obsidian vault, implementing a human-in-the-loop pipeline where tasks flow through staged folders from inbox to completion.
-
----
-
-## Project Goals
-
-- Obsidian vault with `Dashboard.md` and `Company_Handbook.md` as governance layer
-- File system monitoring via a Watcher script
-- Claude Code reading from and writing to the vault
-- Folder-based pipeline: `/Inbox` → `/Needs_Action` → `/Done`
-- All AI functionality implemented as Agent Skills
+An event-driven AI workflow system built on an Obsidian vault, implementing a
+human-in-the-loop pipeline where tasks flow from multiple input sources through
+staged folders to automated execution — powered by Claude.
 
 ---
 
@@ -18,122 +10,240 @@ An event-driven AI workflow system built on an Obsidian vault, implementing a hu
 
 ```
 AI_Employee/
-├── Inbox/                    # Drop new tasks here
+├── Inbox/                    # All watchers drop tasks here
 ├── Needs_Action/             # Validated tasks awaiting planning
-├── Plans/                    # AI-generated plans for each task
+├── Plans/                    # Claude reasoning-loop plans (PLAN_*.md)
 ├── Pending_Approval/         # Plans awaiting human sign-off
-├── Approved/                 # Human-approved plans ready to execute
-├── Done/                     # Completed tasks (archive)
-├── Logs/                     # Execution audit trail (log.txt)
+├── Approved/                 # Human-approved tasks ready to execute
+├── Done/                     # Completed output + archived approvals
+├── Logs/                     # log.txt + scheduler.log
 │
-├── file_watcher.py           # Stage 1 — monitors Inbox
-├── orchestrator.py           # Central event hub
-├── process_tasks.py          # Stage 2 — generates plans
-├── approval_system.py        # Stage 3 — creates approval requests
-├── action.py                 # Stage 4 — executes approved tasks
+│── Watchers (run continuously in separate terminals)
+├── file_watcher.py           # Watches Inbox/ for new files
+├── gmail_watcher.py          # Polls Gmail IMAP for unread emails
+├── linkedin_watcher.py       # Polls LinkedIn notifications + auto-posts
 │
-├── SKILL_process_tasks.md    # Claude Code skill definition
+│── Core Pipeline
+├── orchestrator.py           # Event hub — triggers pipeline stages
+├── process_tasks.py          # Claude 3-step reasoning loop → Plans/
+├── approval_system.py        # Creates human-review requests → Pending_Approval/
+├── action.py                 # Executes approved tasks via Claude + APIs
+│
+│── Automation
+├── scheduler.py              # Cron-like scheduler for recurring jobs
+├── mcp_server.py             # MCP server — exposes tools to Claude Code
+│
+│── Skills (Agent Skill definitions)
+├── SKILL_process_tasks.md    # Reasoning loop skill
+├── SKILL_gmail_watcher.md    # Gmail watcher skill
+├── SKILL_linkedin_post.md    # LinkedIn auto-post skill
+├── SKILL_mcp_server.md       # MCP server skill
+├── SKILL_scheduler.md        # Scheduler skill
+│
+│── Config & Docs
+├── .env.example              # All environment variables (copy → .env)
+├── requirements.txt          # Python dependencies
 ├── Company_Handbook.md       # Policy rules enforced by all agents
 └── Dashboard.md              # Task status dashboard
 ```
 
 ---
 
-## Architecture
-
-### Pipeline Flow
+## Full Pipeline Architecture
 
 ```
-Inbox/ ──► Needs_Action/ ──► Plans/ ──► Pending_Approval/
-                                              │
-                                        [Human Review]
-                                              │
-                                          Approved/ ──► Done/
-                                                         │
-                                                      Logs/log.txt
+┌─────────────────────────────────────────────────────────┐
+│                    INPUT SOURCES                        │
+│  file_watcher.py   gmail_watcher.py   linkedin_watcher  │
+│   (file system)       (IMAP poll)       (API poll)      │
+└──────────────────────────┬──────────────────────────────┘
+                           │ drops .txt files
+                           ▼
+                        Inbox/
+                           │
+                    file_watcher.py
+                    (copies to next stage)
+                           │
+                           ▼
+                     Needs_Action/
+                           │
+              orchestrator.py detects file
+                           │
+                           ▼
+              process_tasks.py (Claude Reasoning Loop)
+                ┌──────────────────────────────┐
+                │  Step 1: Understand task      │
+                │  Step 2: Identify risks       │
+                │  Step 3: Generate plan        │
+                └──────────────────────────────┘
+                           │
+                           ▼
+                        Plans/
+                           │
+              orchestrator.py detects plan
+                           │
+                           ▼
+              approval_system.py
+              (includes full plan + sensitive-action warning)
+                           │
+                           ▼
+                   Pending_Approval/
+                           │
+                    [HUMAN REVIEWS]
+                    Move file to Approved/
+                    or use MCP: approve_task()
+                           │
+                           ▼
+                        Approved/
+                           │
+              orchestrator.py detects approval
+                           │
+                           ▼
+              action.py (Claude + API execution)
+                ┌──────────────────────────────┐
+                │  email task  → Gmail SMTP     │
+                │  linkedin    → LinkedIn API   │
+                │  general     → Claude output  │
+                └──────────────────────────────┘
+                           │
+                    ┌──────┴──────┐
+                    ▼             ▼
+                 Done/         Logs/
+              (result.md)    (log.txt)
 ```
 
-### Components
+---
 
-#### `file_watcher.py` — Stage 1: Intake
-Monitors `Inbox/` using the `watchdog` library. When a file with content appears, it copies it to `Needs_Action/`. Skips empty files and waits 0.5s for writes to stabilize before processing.
+## Watcher Scripts
 
-#### `orchestrator.py` — Central Coordinator
-Event-driven hub that watches three folders simultaneously and spawns the appropriate subprocess when a file event fires:
+| Script                | Source           | Method            | Output          |
+|-----------------------|------------------|-------------------|-----------------|
+| `file_watcher.py`     | Local filesystem | watchdog events   | Inbox/*.txt     |
+| `gmail_watcher.py`    | Gmail inbox      | IMAP UNSEEN poll  | Inbox/email_*.txt |
+| `linkedin_watcher.py` | LinkedIn API     | REST API poll     | Inbox/linkedin_*.txt |
 
-| Folder watched   | Script triggered      |
-|------------------|-----------------------|
-| `Needs_Action/`  | `process_tasks.py`    |
-| `Plans/`         | `approval_system.py`  |
-| `Approved/`      | `action.py`           |
+---
 
-#### `process_tasks.py` — Stage 2: Planning
-Reads each task file and writes a structured `PLAN_<filename>.md` into `Plans/`, containing task understanding, steps (Analyze → Decide → Prepare → Request Approval), and a timestamp.
+## Claude Reasoning Loop (`process_tasks.py`)
 
-#### `approval_system.py` — Stage 3: Human Gate
-Reads each plan and writes an `APPROVAL_<plan>.md` into `Pending_Approval/`. Instructions direct the human reviewer to move the file to `Approved/` to proceed — enforcing the Company Handbook rule: *"Ask before sending anything."*
+Three-step chain-of-thought loop — each step builds on the previous:
 
-#### `action.py` — Stage 4: Execution
-Iterates `Approved/`, executes each task, appends a timestamped entry to `Logs/log.txt`, and moves the file to `Done/`.
+1. **Understand** — Claude restates the task to confirm comprehension
+2. **Consider** — identifies sensitive actions, missing info, urgency
+3. **Plan** — numbered execution plan with specific steps
+
+---
+
+## MCP Server (`mcp_server.py`)
+
+Exposes AI Employee capabilities to Claude Code via MCP protocol.
+
+| Tool                   | Action                                      |
+|------------------------|---------------------------------------------|
+| `send_email`           | Send email via Gmail SMTP                   |
+| `post_to_linkedin`     | Publish post to LinkedIn                    |
+| `list_pending_approvals` | Show all tasks awaiting sign-off          |
+| `approve_task`         | Move task from Pending_Approval → Approved  |
+| `create_task`          | Drop new task into Inbox                    |
+| `get_pipeline_status`  | Count files in each stage                   |
+
+**Register with Claude Code** — add to `.claude/settings.json`:
+```json
+{
+  "mcpServers": {
+    "ai-employee": {
+      "command": "python",
+      "args": ["mcp_server.py"],
+      "cwd": "E:/AI/AI_Employee/AI_Employee"
+    }
+  }
+}
+```
+
+---
+
+## Scheduler (`scheduler.py`)
+
+| Job                 | Default Schedule          | Override (.env)                        |
+|---------------------|---------------------------|----------------------------------------|
+| Gmail check         | Every 60 minutes          | SCHEDULER_GMAIL_INTERVAL_MINUTES       |
+| Process tasks       | Every 5 minutes           | SCHEDULER_TASKS_INTERVAL_MINUTES       |
+| LinkedIn auto-post  | Every Monday at 09:00     | SCHEDULER_LINKEDIN_DAY / _TIME         |
+| Pipeline status log | Every day at 08:00        | —                                      |
+
+---
+
+## Sensitive Action Handling (Human-in-the-Loop)
+
+1. `process_tasks.py` — Step 2 explicitly identifies sensitive actions (email, post, publish)
+2. `approval_system.py` — adds a warning banner to the approval request if sensitive keywords detected
+3. `action.py` — detects task type and routes to the correct executor:
+   - email tasks with a recipient → sends via Gmail SMTP
+   - LinkedIn tasks → posts via LinkedIn API
+   - all tasks → still require human approval before execution
+
+---
+
+## Running the System
+
+**Terminal 1** — File watcher:
+```bash
+python file_watcher.py
+```
+
+**Terminal 2** — Orchestrator (pipeline brain):
+```bash
+python orchestrator.py
+```
+
+**Terminal 3** — Scheduler (recurring jobs):
+```bash
+python scheduler.py
+```
+
+**Terminal 4** — Gmail watcher (optional, or use scheduler):
+```bash
+python gmail_watcher.py
+```
+
+**Terminal 5** — LinkedIn watcher (optional):
+```bash
+python linkedin_watcher.py          # watch mode
+python linkedin_watcher.py post     # post immediately
+```
+
+**MCP Server** (for Claude Code integration):
+```bash
+python mcp_server.py
+```
+
+---
+
+## Setup
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+# Fill in .env with your API keys
+```
+
+### Environment Variables (`.env`)
+
+| Variable                  | Required for                    |
+|---------------------------|---------------------------------|
+| ANTHROPIC_API_KEY         | All Claude features             |
+| GMAIL_USER                | Gmail watcher, email sending    |
+| GMAIL_APP_PASSWORD        | Gmail watcher, email sending    |
+| LINKEDIN_ACCESS_TOKEN     | LinkedIn watcher + posting      |
+| LINKEDIN_PERSON_URN       | LinkedIn posting                |
 
 ---
 
 ## Governance
 
-### `Company_Handbook.md`
-Global policy rules all agents must follow:
+**`Company_Handbook.md`** — rules all agents follow:
 - Always be polite
-- Ask before sending anything (the approval gate enforces this)
+- Ask before sending anything externally (the approval gate enforces this)
 - Handle urgent tasks first
 
-### `SKILL_process_tasks.md`
-Claude Code skill definition that documents the "Process Tasks" workflow. References `Company_Handbook.md` for compliance and defines the step-by-step rules agents follow when processing a task.
-
----
-
-## Workflow Example
-
-1. User drops `linkedin_post.txt` into `Inbox/`
-2. `file_watcher.py` detects the file and copies it to `Needs_Action/`
-3. `orchestrator.py` triggers `process_tasks.py` → creates `Plans/PLAN_linkedin_post.md`
-4. `orchestrator.py` triggers `approval_system.py` → creates `Pending_Approval/APPROVAL_PLAN_linkedin_post.md`
-5. Human reviews and moves the file to `Approved/`
-6. `orchestrator.py` triggers `action.py` → logs execution, moves file to `Done/`
-
----
-
-## Key Design Decisions
-
-- **File-based state** — each folder represents a pipeline stage; easy to inspect and debug
-- **Human-in-the-loop** — no task executes without explicit human approval
-- **Event-driven** — `watchdog` observers eliminate polling; each stage reacts to file creation
-- **Process isolation** — each stage runs as a separate Python subprocess via `orchestrator.py`
-- **Audit trail** — every execution is logged with a timestamp in `Logs/log.txt`
-
----
-
-## Dependencies
-
-```
-watchdog    # File system event monitoring
-pathlib     # Cross-platform file handling (stdlib)
-shutil      # File copy/move operations (stdlib)
-datetime    # Timestamps (stdlib)
-subprocess  # Spawning stage scripts (stdlib)
-```
-
-Install:
-```bash
-pip install watchdog
-```
-
-## Running
-
-Start the watcher and orchestrator in separate terminals:
-
-```bash
-python file_watcher.py
-python orchestrator.py
-```
-
-Then drop task files into `Inbox/` to begin the pipeline.
+Every agent skill references this file. The reasoning loop (Step 2) explicitly checks for policy compliance before generating a plan.

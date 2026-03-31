@@ -1,0 +1,128 @@
+[2026-03-31 18:41:17] Scheduler started.
+[2026-03-31 18:41:17]   Gmail check      : every 60 minute(s)
+[2026-03-31 18:41:17]   Process tasks    : every 5 minute(s)
+[2026-03-31 18:41:17]   LinkedIn post    : every monday at 09:00
+[2026-03-31 18:41:17]   Pipeline status  : every day at 08:00
+[2026-03-31 18:41:17] === Pipeline Status ===
+[2026-03-31 18:41:17]   Inbox                2 file(s)
+[2026-03-31 18:41:17]   Needs_Action         2 file(s)
+[2026-03-31 18:41:17]   Plans                2 file(s)
+[2026-03-31 18:41:17]   Pending_Approval     1 file(s)
+[2026-03-31 18:41:17]   Approved             0 file(s)
+[2026-03-31 18:41:17]   Done                 3 file(s)
+[2026-03-31 18:42:11] Scheduler started.
+[2026-03-31 18:42:11]   Gmail check      : every 60 minute(s)
+[2026-03-31 18:42:11]   Process tasks    : every 5 minute(s)
+[2026-03-31 18:42:11]   LinkedIn post    : every monday at 09:00
+[2026-03-31 18:42:11]   Pipeline status  : every day at 08:00
+[2026-03-31 18:42:11] === Pipeline Status ===
+[2026-03-31 18:42:11]   Inbox                2 file(s)
+[2026-03-31 18:42:11]   Needs_Action         2 file(s)
+[2026-03-31 18:42:11]   Plans                2 file(s)
+[2026-03-31 18:42:11]   Pending_Approval     1 file(s)
+[2026-03-31 18:42:11]   Approved             0 file(s)
+[2026-03-31 18:42:11]   Done                 3 file(s)
+[2026-03-31 18:43:20] Scheduler started.
+[2026-03-31 18:43:20]   Gmail check      : every 60 minute(s)
+[2026-03-31 18:43:20]   Process tasks    : every 5 minute(s)
+[2026-03-31 18:43:20]   LinkedIn post    : every monday at 09:00
+[2026-03-31 18:43:20]   Pipeline status  : every day at 08:00
+[2026-03-31 18:43:20] === Pipeline Status ===
+[2026-03-31 18:43:20]   Inbox                2 file(s)
+[2026-03-31 18:43:20]   Needs_Action         2 file(s)
+[2026-03-31 18:43:20]   Plans                2 file(s)
+[2026-03-31 18:43:20]   Pending_Approval     1 file(s)
+[2026-03-31 18:43:20]   Approved             0 file(s)
+[2026-03-31 18:43:20]   Done                 3 file(s)
+[2026-03-31 18:46:17] === Process pending tasks ===
+[2026-03-31 18:46:18] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 18:47:11] === Process pending tasks ===
+[2026-03-31 18:47:13] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 18:48:20] === Process pending tasks ===
+[2026-03-31 18:48:21] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 18:53:53] === Process pending tasks ===
+[2026-03-31 18:53:53] === Process pending tasks ===
+[2026-03-31 18:53:53] === Process pending tasks ===
+[2026-03-31 18:53:57] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 18:53:57] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 18:53:57] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 18:58:57] === Process pending tasks ===
+[2026-03-31 18:58:57] === Process pending tasks ===
+[2026-03-31 18:58:57] === Process pending tasks ===
+[2026-03-31 18:58:59] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 18:58:59] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 18:58:59] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:07:35] === Process pending tasks ===
+[2026-03-31 19:07:35] === Process pending tasks ===
+[2026-03-31 19:07:35] === Process pending tasks ===
+[2026-03-31 19:07:40] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:07:40] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:07:40] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:12:40] === Process pending tasks ===
+[2026-03-31 19:12:40] === Process pending tasks ===
+[2026-03-31 19:12:40] === Process pending tasks ===
+[2026-03-31 19:12:42] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:12:42] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:17:42] === Process pending tasks ===
+[2026-03-31 19:17:42] === Process pending tasks ===
+[2026-03-31 19:17:42] === Process pending tasks ===
+[2026-03-31 19:17:43] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:17:43] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:17:43] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:22:43] === Process pending tasks ===
+[2026-03-31 19:22:43] === Process pending tasks ===
+[2026-03-31 19:22:43] === Process pending tasks ===
+[2026-03-31 19:22:45] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:22:45] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:22:45] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:27:45] === Process pending tasks ===
+[2026-03-31 19:27:45] === Process pending tasks ===
+[2026-03-31 19:27:45] === Process pending tasks ===
+[2026-03-31 19:27:46] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:27:46] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:27:46] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:32:46] === Process pending tasks ===
+[2026-03-31 19:32:46] === Process pending tasks ===
+[2026-03-31 19:32:46] === Process pending tasks ===
+[2026-03-31 19:32:48] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:32:48] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:37:48] === Process pending tasks ===
+[2026-03-31 19:37:48] === Process pending tasks ===
+[2026-03-31 19:37:48] === Process pending tasks ===
+[2026-03-31 19:37:49] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:37:49] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:37:49] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:41:19] === Gmail check ===
+[2026-03-31 19:42:19] === Gmail check ===
+[2026-03-31 19:42:49] === Process pending tasks ===
+[2026-03-31 19:42:51] [process_tasks] Plan already exists for linkedin_post.txt, skipping.
+[process_tasks] Plan already exists for req.txt, skipping.
+[2026-03-31 19:43:21] === Gmail check ===

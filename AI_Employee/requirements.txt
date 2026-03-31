@@ -1,0 +1,6 @@
+anthropic
+watchdog
+mcp
+requests
+schedule
+python-dotenv
